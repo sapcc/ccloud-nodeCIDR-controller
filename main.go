@@ -79,6 +79,7 @@ func main() {
 				params := ipam.NewIPAMIPAddressesListParams().WithQ(&node.Name)
 				res, err := nb.IPAM.IPAMIPAddressesList(params, nil)
 				if err != nil {
+					log.Error(err, "error searching ips for hostname")
 					return reconcile.Result{}, err
 				}
 				if *res.Payload.Count != 1 {
@@ -93,6 +94,7 @@ func main() {
 				deviceParams := dcim.NewDcimInterfacesListParams().WithDeviceID(&deviceID).WithName(&interfaceName)
 				cbr0, err := nb.Dcim.DcimInterfacesList(deviceParams, nil)
 				if err != nil {
+					log.Error(err, "error searching interfaces")
 					return reconcile.Result{}, err
 				}
 				if *cbr0.Payload.Count != 1 {
@@ -103,6 +105,7 @@ func main() {
 				ipParams := ipam.NewIPAMIPAddressesListParams().WithInterfaceID(&cbr0.Payload.Results[0].ID)
 				theIP, err := nb.IPAM.IPAMIPAddressesList(ipParams, nil)
 				if err != nil {
+					log.Error(err, "error searching cbr0 ip")
 					return reconcile.Result{}, err
 				}
 				if *theIP.Payload.Count != 1 {
@@ -113,7 +116,11 @@ func main() {
 				_, net, err := net2.ParseCIDR(*theIP.Payload.Results[0].Address)
 				log.Info(fmt.Sprintf("net: %s", net.String()))
 				node.Spec.PodCIDR = net.String()
-				//mgr.GetClient().Update(context.Background(), node)
+				err = mgr.GetClient().Update(context.Background(), node)
+				if err != nil {
+					log.Error(err, "error updating node")
+					return reconcile.Result{}, err
+				}
 			}
 			return reconcile.Result{}, nil
 		}),
