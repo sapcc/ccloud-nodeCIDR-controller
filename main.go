@@ -8,6 +8,7 @@ import (
 	"github.com/hosting-de-labs/go-netbox/netbox/client"
 	"github.com/hosting-de-labs/go-netbox/netbox/client/dcim"
 	"github.com/hosting-de-labs/go-netbox/netbox/client/ipam"
+	"github.com/prometheus/client_golang/prometheus"
 	uberzap "go.uber.org/zap"
 	corev1 "k8s.io/api/core/v1"
 	_ "k8s.io/client-go/plugin/pkg/client/auth/oidc"
@@ -22,9 +23,35 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/log/zap"
 	"sigs.k8s.io/controller-runtime/pkg/manager"
 	"sigs.k8s.io/controller-runtime/pkg/manager/signals"
+	"sigs.k8s.io/controller-runtime/pkg/metrics"
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 	"sigs.k8s.io/controller-runtime/pkg/source"
 )
+
+var (
+	netboxFails = prometheus.NewCounter(
+			prometheus.CounterOpts{
+				Name: "netbox_fails",
+				Help: "number of failed netbox requests",
+			},
+			)
+	netboxResultFails = prometheus.NewCounter(
+			prometheus.CounterOpts{
+				Name: "netbox_result_fails",
+				Help: "number of times netbox results are too few or too many",
+			},
+		)
+	k8sFails = prometheus.NewCounter(
+			prometheus.CounterOpts{
+				Name: "k8s_fails",
+				Help: "number of times k8s operations failed",
+			},
+		)
+)
+
+func init() {
+	metrics.Registry.MustRegister(netboxFails, netboxResultFails, k8sFails)
+}
 
 func main() {
 	var debug bool
@@ -80,11 +107,13 @@ func main() {
 				res, err := nb.IPAM.IPAMIPAddressesList(params, nil)
 				if err != nil {
 					log.Error(err, "error searching ips for hostname")
+					netboxFails.Inc()
 					return reconcile.Result{}, err
 				}
 				if *res.Payload.Count != 1 {
 					err := fmt.Errorf("too many results: got %d results for %s", *res.Payload.Count, node.Name)
 					log.Error(err, "error getting node ip")
+					netboxResultFails.Inc()
 					return reconcile.Result{},err
 				}
 				deviceID := res.Payload.Results[0].Interface.Device.ID
@@ -95,22 +124,26 @@ func main() {
 				cbr0, err := nb.Dcim.DcimInterfacesList(deviceParams, nil)
 				if err != nil {
 					log.Error(err, "error searching interfaces")
+					netboxFails.Inc()
 					return reconcile.Result{}, err
 				}
 				if *cbr0.Payload.Count != 1 {
 					err := fmt.Errorf("too many results: got %d results for device %d", *cbr0.Payload.Count, deviceID)
 					log.Error(err, "error getting node device")
+					netboxResultFails.Inc()
 					return reconcile.Result{},err
 				}
 				ipParams := ipam.NewIPAMIPAddressesListParams().WithInterfaceID(&cbr0.Payload.Results[0].ID)
 				theIP, err := nb.IPAM.IPAMIPAddressesList(ipParams, nil)
 				if err != nil {
 					log.Error(err, "error searching cbr0 ip")
+					netboxFails.Inc()
 					return reconcile.Result{}, err
 				}
 				if *theIP.Payload.Count != 1 {
 					err := fmt.Errorf("too many results: got %d results for interface %d", *theIP.Payload.Count, cbr0.Payload.Results[0].ID)
 					log.Error(err, "error getting node device")
+					netboxResultFails.Inc()
 					return reconcile.Result{},err
 				}
 				_, net, err := net2.ParseCIDR(*theIP.Payload.Results[0].Address)
@@ -119,6 +152,7 @@ func main() {
 				err = mgr.GetClient().Update(context.Background(), node)
 				if err != nil {
 					log.Error(err, "error updating node")
+					k8sFails.Inc()
 					return reconcile.Result{}, err
 				}
 			}
@@ -132,6 +166,7 @@ func main() {
 	err = c.Watch(&source.Kind{Type: &corev1.Node{}}, &handler.EnqueueRequestForObject{})
 	if err != nil {
 		log.Error(err, "unable to watch nodes")
+		k8sFails.Inc()
 		os.Exit(1)
 	}
 	if err := mgr.Start(signals.SetupSignalHandler()); err != nil {
