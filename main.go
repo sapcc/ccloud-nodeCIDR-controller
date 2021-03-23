@@ -8,6 +8,7 @@ import (
 	"github.com/sapcc/go-netbox-go/dcim"
 	"github.com/sapcc/go-netbox-go/ipam"
 	"github.com/sapcc/go-netbox-go/models"
+	"github.com/sapcc/go-netbox-go/virtualization"
 	uberzap "go.uber.org/zap"
 	corev1 "k8s.io/api/core/v1"
 	_ "k8s.io/client-go/plugin/pkg/client/auth/oidc"
@@ -91,10 +92,15 @@ func main() {
 		Reconciler: reconcile.Func(func(request reconcile.Request) (reconcile.Result, error) {
 			log.Info(fmt.Sprintf("Node: %s", request.Name))
 			node := &corev1.Node{}
-			mgr.GetClient().Get(context.Background(), request.NamespacedName, node)
+			err := mgr.GetClient().Get(context.Background(), request.NamespacedName, node)
+			if err != nil {
+				log.Error(err, "could not get client from manager")
+				k8sFails.Inc()
+				return reconcile.Result{}, err
+			}
 			if node.Spec.PodCIDR == "" {
 				log.Info("No PodCIDR set getting from netbox")
-				nbIpam, err := ipam.New(netboxUrl, netboxToken)
+				nbIpam, err := ipam.New(netboxUrl, netboxToken, false)
 				if err != nil {
 					return reconcile.Result{}, err
 				}
@@ -113,38 +119,65 @@ func main() {
 					return reconcile.Result{},err
 				}
 				log.Info(fmt.Sprintf("%+v", res.Results[0]))
-				deviceID := res.Results[0].AssignedInterface.Device.Id
-				var interfaceName string
-				interfaceName = "cbr0"
-				log.Info(fmt.Sprintf("looking for device %d and interface %s", deviceID, interfaceName))
-				//deviceParams := dcim.NewDcimInterfacesListParams().WithDeviceID(&deviceID).WithName(&interfaceName)
-				interfaceOpts := models.ListInterfacesRequest{
-					DeviceId: deviceID,
-				}
-				interfaceOpts.Name = interfaceName
-				//cbr0, err := nb.Dcim.DcimInterfacesList(deviceParams, nil)
-				nbDcim, err := dcim.New(netboxUrl, netboxToken)
-				if err != nil {
-					log.Error(err, "error getting dcim client")
-					netboxFails.Inc()
-					return reconcile.Result{}, err
-				}
-				interf, err := nbDcim.ListInterfaces(interfaceOpts)
-				if err != nil {
-					log.Error(err, "error searching interfaces")
-					netboxFails.Inc()
-					return reconcile.Result{}, err
-				}
-				if interf.Count != 1 {
-					err := fmt.Errorf("too many results: got %d results for device %d", interf.Count, deviceID)
-					log.Error(err, "error getting node device")
-					netboxResultFails.Inc()
-					return reconcile.Result{},err
-				}
-				//ipParams := ipam.NewIPAMIPAddressesListParams().WithInterfaceID(&cbr0.Payload.Results[0].ID)
+				var deviceID int
+				objecttype := res.Results[0].AssignedObjectType
 				ipOpts := models.ListIpAddressesRequest{}
-				ipOpts.InterfaceId = interf.Results[0].Id
-				//theIP, err := nb.IPAM.IPAMIPAddressesList(ipParams, nil)
+				switch objecttype {
+				case "dcim.interface":
+					deviceID = res.Results[0].AssignedInterface.Device.Id
+					interfaceOpts := models.ListInterfacesRequest{}
+					interfaceOpts.DeviceId = deviceID
+					interfaceOpts.Name = "cbr0"
+					log.Info(fmt.Sprintf("looking for device %d and interface cbr0", deviceID))
+					nbDcim, err := dcim.New(netboxUrl, netboxToken, false)
+					if err != nil {
+						log.Error(err, "error getting dcim client")
+						netboxFails.Inc()
+						return reconcile.Result{}, err
+					}
+					interf, err := nbDcim.ListInterfaces(interfaceOpts)
+					if err != nil {
+						log.Error(err, "error searching interfaces")
+						netboxFails.Inc()
+						return reconcile.Result{}, err
+					}
+					if interf.Count != 1 {
+						err := fmt.Errorf("too many results: got %d results for device %d", interf.Count, deviceID)
+						log.Error(err, "error getting node device")
+						netboxResultFails.Inc()
+						return reconcile.Result{},err
+					}
+					ipOpts.InterfaceId = interf.Results[0].Id
+				case "virtualization.vminterface":
+					deviceID = res.Results[0].AssignedVMInterface.VirtualMachine.Id
+					interfaceOpts := models.ListVMInterfacesRequest{}
+					interfaceOpts.Name = "cbr0"
+					interfaceOpts.VmId = deviceID
+					nbVirt, err := virtualization.New(netboxUrl, netboxToken, false)
+					if err != nil {
+						log.Error(err, "error getting virtualization client")
+						netboxFails.Inc()
+						return reconcile.Result{}, err
+					}
+					interf, err := nbVirt.ListVMInterfaces(interfaceOpts)
+					if err != nil {
+						log.Error(err, "error searching vm interfaces")
+						netboxFails.Inc()
+						return reconcile.Result{}, err
+					}
+					if interf.Count != 1 {
+						err := fmt.Errorf("too many results: got %d results for device %d", interf.Count, deviceID)
+						log.Error(err, "error getting vm device")
+						netboxResultFails.Inc()
+						return reconcile.Result{}, err
+					}
+					ipOpts.VmInterfaceId = interf.Results[0].Id
+				default:
+					err := fmt.Errorf("no interface assigned to ip")
+					log.Error(err, "error finding interface")
+					netboxResultFails.Inc()
+					return reconcile.Result{}, err
+				}
 				theIP, err := nbIpam.ListIpAddresses(ipOpts)
 				if err != nil {
 					log.Error(err, "error searching cbr0 ip")
@@ -152,12 +185,17 @@ func main() {
 					return reconcile.Result{}, err
 				}
 				if theIP.Count != 1 {
-					err := fmt.Errorf("too many results: got %d results for interface %d", theIP.Count, interf.Results[0].Id)
+					err := fmt.Errorf("too many results: got %d results for interface", theIP.Count)
 					log.Error(err, "error getting node device")
 					netboxResultFails.Inc()
 					return reconcile.Result{},err
 				}
 				_, net, err := net2.ParseCIDR(theIP.Results[0].Address)
+				if err != nil {
+					log.Error(err, "error parsing network string")
+					k8sFails.Inc()
+					return reconcile.Result{}, err
+				}
 				log.Info(fmt.Sprintf("net: %s", net.String()))
 				node.Spec.PodCIDR = net.String()
 				err = mgr.GetClient().Update(context.Background(), node)

@@ -274,6 +274,10 @@ github.com/rogpeppe/go-internal v1.3.0/go.mod h1:M8bDsm7K2OlrFYOpmOWEs/qY81heoFR
 github.com/russross/blackfriday v1.5.2/go.mod h1:JO/DiYxRf+HjHt06OyowR9PTA263kcR/rfWxYHBV53g=
 github.com/sapcc/go-netbox-go v0.0.0-20200916104853-2806c4993772 h1:IRREzsJB3gGet1I2CSBs7EvW2THuWfQRA7LJ5NIfxSY=
 github.com/sapcc/go-netbox-go v0.0.0-20200916104853-2806c4993772/go.mod h1:OBW//eT0yBsUbzP8qN9uLC/aYu5ZipKb9lmmH33JboQ=
+github.com/sapcc/go-netbox-go v0.0.0-20210212135728-5363b5e117bc h1:iUf2a8qQCvPjGX7OZNCk0eu6N7YzgnR1J9+Hnnee6v8=
+github.com/sapcc/go-netbox-go v0.0.0-20210212135728-5363b5e117bc/go.mod h1:UTHkVIgWS7Y9eDV7dU9RepRpy2Q8wCrLgrqVOZfIi9Q=
+github.com/sapcc/go-netbox-go v0.0.0-20210323094538-40dc4dbc56df h1:BfqFv0psz7PrxKjrLFyrcSCMSzJ/qfEfLcLi17qC9G0=
+github.com/sapcc/go-netbox-go v0.0.0-20210323094538-40dc4dbc56df/go.mod h1:UTHkVIgWS7Y9eDV7dU9RepRpy2Q8wCrLgrqVOZfIi9Q=
 github.com/seborama/govcr v4.5.0+incompatible h1:XvdHtXi0d4cUAn+0aWolvwfS3nmhNC8Z+yMQwn/M64I=
 github.com/seborama/govcr v4.5.0+incompatible/go.mod h1:EgcISudCCYDLzbiAImJ8i7kk4+wTA44Kp+j4S0LhASI=
 github.com/sergi/go-diff v1.0.0/go.mod h1:0CfEIISq7TuYL3j771MWULgwwjU+GofnZX9QAmXWZgo=
@@ -327,6 +331,7 @@ go.uber.org/tools v0.0.0-20190618225709-2cfd321de3ee/go.mod h1:vJERXedbb3MVM5f9E
 go.uber.org/zap v1.10.0/go.mod h1:vwi/ZaCAaUcBkycHslxD9B2zi4UTXhF60s6SWpuDF0Q=
 go.uber.org/zap v1.16.0 h1:uFRZXykJGK9lLY4HtgSw44DnIcAM+kRBP7x5m+NpAOM=
 go.uber.org/zap v1.16.0/go.mod h1:MA8QOfq0BHJwdXa996Y4dYkAqRKB8/1K1QMMZVaNZjQ=
+golang.org/dl v0.0.0-20201217181409-aeefed14b4e2/go.mod h1:IUMfjQLJQd4UTqG1Z90tenwKoCX93Gn3MAQJMOSBsDQ=
 golang.org/x/crypto v0.0.0-20180904163835-0709b304e793/go.mod h1:6SG95UA2DQfeDnfUPMdvaQW0Q7yPrPDi9nlGo2tz2b4=
 golang.org/x/crypto v0.0.0-20181203042331-505ab145d0a9/go.mod h1:6SG95UA2DQfeDnfUPMdvaQW0Q7yPrPDi9nlGo2tz2b4=
 golang.org/x/crypto v0.0.0-20190211182817-74369b46fc67/go.mod h1:6SG95UA2DQfeDnfUPMdvaQW0Q7yPrPDi9nlGo2tz2b4=
