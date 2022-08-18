@@ -29,23 +29,23 @@ import (
 
 var (
 	netboxFails = prometheus.NewCounter(
-			prometheus.CounterOpts{
-				Name: "netbox_fails",
-				Help: "number of failed netbox requests",
-			},
-			)
+		prometheus.CounterOpts{
+			Name: "netbox_fails",
+			Help: "number of failed netbox requests",
+		},
+	)
 	netboxResultFails = prometheus.NewCounter(
-			prometheus.CounterOpts{
-				Name: "netbox_result_fails",
-				Help: "number of times netbox results are too few or too many",
-			},
-		)
+		prometheus.CounterOpts{
+			Name: "netbox_result_fails",
+			Help: "number of times netbox results are too few or too many",
+		},
+	)
 	k8sFails = prometheus.NewCounter(
-			prometheus.CounterOpts{
-				Name: "k8s_fails",
-				Help: "number of times k8s operations failed",
-			},
-		)
+		prometheus.CounterOpts{
+			Name: "k8s_fails",
+			Help: "number of times k8s operations failed",
+		},
+	)
 )
 
 func init() {
@@ -65,7 +65,7 @@ func main() {
 
 	ctrl.SetLogger(zap.New(func(o *zap.Options) {
 		o.Development = true
-		if ! debug {
+		if !debug {
 			o.Level = uberzap.NewAtomicLevelAt(uberzap.InfoLevel)
 		}
 	}))
@@ -89,7 +89,7 @@ func main() {
 		os.Exit(1)
 	}
 	c, err := controller.New("ccloud-nodeCIDR-controller", mgr, controller.Options{
-		Reconciler: reconcile.Func(func(request reconcile.Request) (reconcile.Result, error) {
+		Reconciler: reconcile.Func(func(ctx context.Context, request reconcile.Request) (reconcile.Result, error) {
 			log.Info(fmt.Sprintf("Node: %s", request.Name))
 			node := &corev1.Node{}
 			err := mgr.GetClient().Get(context.Background(), request.NamespacedName, node)
@@ -116,7 +116,7 @@ func main() {
 					err := fmt.Errorf("too many results: got %d results for %s", res.Count, node.Name)
 					log.Error(err, "error getting node ip")
 					netboxResultFails.Inc()
-					return reconcile.Result{},err
+					return reconcile.Result{}, err
 				}
 				log.Info(fmt.Sprintf("%+v", res.Results[0]))
 				var deviceID int
@@ -145,7 +145,7 @@ func main() {
 						err := fmt.Errorf("too many results: got %d results for device %d", interf.Count, deviceID)
 						log.Error(err, "error getting node device")
 						netboxResultFails.Inc()
-						return reconcile.Result{},err
+						return reconcile.Result{}, err
 					}
 					ipOpts.InterfaceId = interf.Results[0].Id
 				case "virtualization.vminterface":
@@ -188,7 +188,7 @@ func main() {
 					err := fmt.Errorf("too many results: got %d results for interface", theIP.Count)
 					log.Error(err, "error getting node device")
 					netboxResultFails.Inc()
-					return reconcile.Result{},err
+					return reconcile.Result{}, err
 				}
 				_, net, err := net2.ParseCIDR(theIP.Results[0].Address)
 				if err != nil {
