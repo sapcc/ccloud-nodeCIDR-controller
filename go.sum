@@ -553,6 +553,8 @@ github.com/sapcc/go-netbox-go v0.0.0-20210212135728-5363b5e117bc h1:iUf2a8qQCvPj
 github.com/sapcc/go-netbox-go v0.0.0-20210212135728-5363b5e117bc/go.mod h1:UTHkVIgWS7Y9eDV7dU9RepRpy2Q8wCrLgrqVOZfIi9Q=
 github.com/sapcc/go-netbox-go v0.0.0-20210323094538-40dc4dbc56df h1:BfqFv0psz7PrxKjrLFyrcSCMSzJ/qfEfLcLi17qC9G0=
 github.com/sapcc/go-netbox-go v0.0.0-20210323094538-40dc4dbc56df/go.mod h1:UTHkVIgWS7Y9eDV7dU9RepRpy2Q8wCrLgrqVOZfIi9Q=
+github.com/sapcc/go-netbox-go v0.0.0-20220722142507-a20106790a26 h1:bkjg+CHHCA1hnymxAZoamLQPpCYq5OkU73WAd5+rrDs=
+github.com/sapcc/go-netbox-go v0.0.0-20220722142507-a20106790a26/go.mod h1:UTHkVIgWS7Y9eDV7dU9RepRpy2Q8wCrLgrqVOZfIi9Q=
 github.com/sean-/seed v0.0.0-20170313163322-e2103e2c3529/go.mod h1:DxrIzT+xaE7yg65j358z/aeFdxmN0P9QXhEzd20vsDc=
 github.com/seborama/govcr v4.5.0+incompatible h1:XvdHtXi0d4cUAn+0aWolvwfS3nmhNC8Z+yMQwn/M64I=
 github.com/seborama/govcr v4.5.0+incompatible/go.mod h1:EgcISudCCYDLzbiAImJ8i7kk4+wTA44Kp+j4S0LhASI=
