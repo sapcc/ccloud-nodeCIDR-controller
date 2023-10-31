@@ -12,7 +12,7 @@ dockerfile:
   enabled: true
 
 golang:
-  enableVendoring: true
+  enableVendoring: false
   setGoModVersion: true
 
 golangciLint:
