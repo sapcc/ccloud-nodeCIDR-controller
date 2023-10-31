@@ -5,7 +5,7 @@ go 1.21
 require (
 	github.com/prometheus/client_golang v1.16.0
 	github.com/sapcc/go-netbox-go v0.0.0-20210323094538-40dc4dbc56df
-	go.uber.org/zap v1.25.0
+	go.uber.org/zap v1.26.0
 	k8s.io/api v0.28.3
 	k8s.io/client-go v0.28.3
 	sigs.k8s.io/controller-runtime v0.16.3
