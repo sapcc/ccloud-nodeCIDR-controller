@@ -24,6 +24,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/manager"
 	"sigs.k8s.io/controller-runtime/pkg/manager/signals"
 	"sigs.k8s.io/controller-runtime/pkg/metrics"
+	"sigs.k8s.io/controller-runtime/pkg/metrics/server"
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 	"sigs.k8s.io/controller-runtime/pkg/source"
 )
@@ -71,7 +72,7 @@ func main() {
 		}
 	}))
 	var opts manager.Options
-	opts.MetricsBindAddress = ":8080"
+	opts.Metrics = server.Options{BindAddress: ":8080"}
 	opts.HealthProbeBindAddress = ":8081"
 
 	var log = logf.Log.WithName("ccloud-nodeCIDR-controller")
@@ -213,7 +214,7 @@ func main() {
 		log.Error(err, "unable to create ccloud-nodeCIDR-controller")
 		os.Exit(1)
 	}
-	err = c.Watch(&source.Kind{Type: &corev1.Node{}}, &handler.EnqueueRequestForObject{})
+	err = c.Watch(source.Kind(mgr.GetCache(), &corev1.Node{}), &handler.EnqueueRequestForObject{})
 	if err != nil {
 		log.Error(err, "unable to watch nodes")
 		k8sFails.Inc()
