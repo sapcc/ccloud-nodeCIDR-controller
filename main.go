@@ -4,6 +4,9 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	net2 "net"
+	"os"
+
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/sapcc/go-netbox-go/dcim"
 	"github.com/sapcc/go-netbox-go/ipam"
@@ -12,8 +15,6 @@ import (
 	uberzap "go.uber.org/zap"
 	corev1 "k8s.io/api/core/v1"
 	_ "k8s.io/client-go/plugin/pkg/client/auth/oidc"
-	net2 "net"
-	"os"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client/config"
 	"sigs.k8s.io/controller-runtime/pkg/controller"
@@ -55,11 +56,11 @@ func init() {
 func main() {
 	var debug bool
 	var kubeContext string
-	var netboxUrl string
+	var netboxURL string
 	var netboxToken string
 	flag.BoolVar(&debug, "debug", false, "enable debug logging")
 	flag.StringVar(&kubeContext, "kubecontext", "", "the context to use from kube_config")
-	flag.StringVar(&netboxUrl, "netboxurl", "https://netbox.global.cloud.sap", "the netbox to query for the node")
+	flag.StringVar(&netboxURL, "netboxURL", "https://netbox.global.cloud.sap", "the netbox to query for the node")
 	flag.StringVar(&netboxToken, "netboxtoken", "", "the netbox token to use")
 	flag.Parse()
 
@@ -100,7 +101,7 @@ func main() {
 			}
 			if node.Spec.PodCIDR == "" {
 				log.Info("No PodCIDR set getting from netbox")
-				nbIpam, err := ipam.New(netboxUrl, netboxToken, false)
+				nbIpam, err := ipam.New(netboxURL, netboxToken, false)
 				if err != nil {
 					return reconcile.Result{}, err
 				}
@@ -129,7 +130,7 @@ func main() {
 					interfaceOpts.DeviceId = deviceID
 					interfaceOpts.Name = "cbr0"
 					log.Info(fmt.Sprintf("looking for device %d and interface cbr0", deviceID))
-					nbDcim, err := dcim.New(netboxUrl, netboxToken, false)
+					nbDcim, err := dcim.New(netboxURL, netboxToken, false)
 					if err != nil {
 						log.Error(err, "error getting dcim client")
 						netboxFails.Inc()
@@ -153,7 +154,7 @@ func main() {
 					interfaceOpts := models.ListVMInterfacesRequest{}
 					interfaceOpts.Name = "cbr0"
 					interfaceOpts.VmId = deviceID
-					nbVirt, err := virtualization.New(netboxUrl, netboxToken, false)
+					nbVirt, err := virtualization.New(netboxURL, netboxToken, false)
 					if err != nil {
 						log.Error(err, "error getting virtualization client")
 						netboxFails.Inc()
