@@ -1,0 +1,40 @@
+# Configuration file for <https://github.com/sapcc/go-makefile-maker>
+
+metadata:
+  url: https://github.com/sapcc/ccloud-nodeCIDR-controller
+
+binaries:
+  - name:        ccloud-nodeCIDR-controller
+    fromPackage: .
+    installTo:   bin/
+
+dockerfile:
+  enabled: true
+
+golang:
+  enableVendoring: true
+  setGoModVersion: true
+
+golangciLint:
+  createConfig: true
+
+githubWorkflow:
+  ci:
+    enabled: true
+    coveralls: true
+    ignorePaths:
+      - "**.md" # all Markdown files
+  license:
+    enabled: true
+  securityChecks:
+    enabled: true
+  spellCheck:
+    enabled: true
+
+renovate:
+  enabled: true
+  assignees:
+    - defo89
+    - SchwarzM
+    - xsen84
+    - goerangudat
