@@ -2,7 +2,7 @@
   "extends": [
     "config:base",
     "default:pinDigestsDisabled",
-    "github>whitesource/merge-confidence:beta",
+    "mergeConfidence:all-badges",
     "docker:disable"
   ],
   "assignees": [
@@ -13,8 +13,10 @@
   ],
   "commitMessageAction": "Renovate: Update",
   "constraints": {
-    "go": "1.21"
+    "go": "1.22"
   },
+  "dependencyDashboardOSVVulnerabilitySummary": "all",
+  "osvVulnerabilityAlerts": true,
   "postUpdateOptions": [
     "gomodTidy",
     "gomodUpdateImportPaths"
@@ -24,7 +26,7 @@
       "matchPackageNames": [
         "golang"
       ],
-      "allowedVersions": "1.21.x"
+      "allowedVersions": "1.22.x"
     },
     {
       "matchPackagePatterns": [
@@ -46,7 +48,7 @@
       "matchPackagePrefixes": [
         "k8s.io/"
       ],
-      "allowedVersions": "0.27.x"
+      "allowedVersions": "0.28.x"
     }
   ],
   "prHourlyLimit": 0,
