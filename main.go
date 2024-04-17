@@ -21,6 +21,7 @@ package main
 
 import (
 	"context"
+	"errors"
 	"flag"
 	"fmt"
 	net2 "net"
@@ -111,7 +112,7 @@ func main() {
 	}
 	c, err := controller.New("ccloud-nodeCIDR-controller", mgr, controller.Options{
 		Reconciler: reconcile.Func(func(ctx context.Context, request reconcile.Request) (reconcile.Result, error) {
-			log.Info(fmt.Sprintf("Node: %s", request.Name))
+			log.Info("Node: " + request.Name)
 			node := &corev1.Node{}
 			err := mgr.GetClient().Get(context.Background(), request.NamespacedName, node)
 			if err != nil {
@@ -194,7 +195,7 @@ func main() {
 					}
 					ipOpts.VmInterfaceId = interf.Results[0].Id
 				default:
-					err := fmt.Errorf("no interface assigned to ip")
+					err := errors.New("no interface assigned to ip")
 					log.Error(err, "error finding interface")
 					netboxResultFails.Inc()
 					return reconcile.Result{}, err
@@ -217,7 +218,7 @@ func main() {
 					k8sFails.Inc()
 					return reconcile.Result{}, err
 				}
-				log.Info(fmt.Sprintf("net: %s", net.String()))
+				log.Info("net: " + net.String())
 				node.Spec.PodCIDR = net.String()
 				err = mgr.GetClient().Update(context.Background(), node)
 				if err != nil {
