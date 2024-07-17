@@ -92,8 +92,8 @@ func main() {
 		}
 	}))
 	var opts manager.Options
-	opts.Metrics = server.Options{BindAddress: ":8080"}
-	opts.HealthProbeBindAddress = ":8081"
+	opts.Metrics = server.Options{BindAddress: ":32280"}
+	opts.HealthProbeBindAddress = ":32281"
 
 	var log = logf.Log.WithName("ccloud-nodeCIDR-controller")
 
