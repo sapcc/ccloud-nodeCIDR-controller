@@ -1,6 +1,6 @@
 module github.com/sapcc/ccloud-nodeCIDR-controller
 
-go 1.22
+go 1.23
 
 require (
 	github.com/prometheus/client_golang v1.16.0
