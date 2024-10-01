@@ -234,7 +234,7 @@ func main() {
 		log.Error(err, "unable to create ccloud-nodeCIDR-controller")
 		os.Exit(1)
 	}
-	err = c.Watch(source.Kind(mgr.GetCache(), &corev1.Node{}), &handler.EnqueueRequestForObject{})
+	err = c.Watch(source.Kind(mgr.GetCache(), &corev1.Node{}, &handler.TypedEnqueueRequestForObject[*corev1.Node]{}))
 	if err != nil {
 		log.Error(err, "unable to watch nodes")
 		k8sFails.Inc()
