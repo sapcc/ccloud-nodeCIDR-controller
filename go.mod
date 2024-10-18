@@ -3,7 +3,7 @@ module github.com/sapcc/ccloud-nodeCIDR-controller
 go 1.23
 
 require (
-	github.com/prometheus/client_golang v1.20.4
+	github.com/prometheus/client_golang v1.20.5
 	github.com/sapcc/go-netbox-go v0.0.0-20240903112835-3d1560085a83
 	go.uber.org/zap v1.27.0
 	k8s.io/api v0.31.0
