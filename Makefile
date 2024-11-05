@@ -29,7 +29,6 @@ GO_BUILDFLAGS =
 GO_LDFLAGS =
 GO_TESTENV =
 GO_BUILDENV =
-TESTBIN=$(shell pwd)/testbin
 
 build-all: build/ccloud-nodeCIDR-controller
 
@@ -73,7 +72,7 @@ run-golangci-lint: FORCE prepare-static-check
 
 build/cover.out: FORCE generate install-setup-envtest | build
 	@printf "\e[1;36m>> Running tests\e[0m\n"
-	KUBEBUILDER_ASSETS=$$(setup-envtest use 1.31 --bin-dir $(TESTBIN) -p path) go test -shuffle=on -p 1 -coverprofile=$@ $(GO_BUILDFLAGS) -ldflags '-s -w $(GO_LDFLAGS)' -covermode=count -coverpkg=$(subst $(space),$(comma),$(GO_COVERPKGS)) $(GO_TESTPKGS)
+	KUBEBUILDER_ASSETS=$$(setup-envtest use 1.31 -p path) go test -shuffle=on -p 1 -coverprofile=$@ $(GO_BUILDFLAGS) -ldflags '-s -w $(GO_LDFLAGS)' -covermode=count -coverpkg=$(subst $(space),$(comma),$(GO_COVERPKGS)) $(GO_TESTPKGS)
 
 build/cover.html: build/cover.out
 	@printf "\e[1;36m>> go tool cover > build/cover.html\e[0m\n"
@@ -111,7 +110,6 @@ vars: FORCE
 	@printf "GO_LDFLAGS=$(GO_LDFLAGS)\n"
 	@printf "GO_TESTPKGS=$(GO_TESTPKGS)\n"
 	@printf "PREFIX=$(PREFIX)\n"
-	@printf "TESTBIN=$(TESTBIN)\n"
 help: FORCE
 	@printf "\n"
 	@printf "\e[1mUsage:\e[0m\n"
