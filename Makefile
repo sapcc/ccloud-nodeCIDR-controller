@@ -42,7 +42,7 @@ GO_BUILDENV =
 build-all: build/ccloud-nodeCIDR-controller
 
 build/ccloud-nodeCIDR-controller: FORCE generate
-	@env $(GO_BUILDENV) go build $(GO_BUILDFLAGS) -ldflags '-s -w $(GO_LDFLAGS)' -o build/ccloud-nodeCIDR-controller .
+	env $(GO_BUILDENV) go build $(GO_BUILDFLAGS) -ldflags '-s -w $(GO_LDFLAGS)' -o build/ccloud-nodeCIDR-controller .
 
 DESTDIR =
 ifeq ($(shell uname -s),Darwin)
