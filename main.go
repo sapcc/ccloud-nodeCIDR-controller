@@ -126,9 +126,9 @@ func main() {
 				if err != nil {
 					return reconcile.Result{}, err
 				}
-				opts := models.ListIpAddressesRequest{}
+				opts := models.ListIPAddressesRequest{}
 				opts.Q = node.Name
-				res, err := nbIpam.ListIpAddresses(opts)
+				res, err := nbIpam.ListIPAddresses(opts)
 				if err != nil {
 					log.Error(err, "error searching ips for hostname")
 					netboxFails.Inc()
@@ -143,12 +143,12 @@ func main() {
 				log.Info(fmt.Sprintf("%+v", res.Results[0]))
 				var deviceID int
 				objecttype := res.Results[0].AssignedObjectType
-				ipOpts := models.ListIpAddressesRequest{}
+				ipOpts := models.ListIPAddressesRequest{}
 				switch objecttype {
 				case "dcim.interface":
-					deviceID = res.Results[0].AssignedInterface.Device.Id
+					deviceID = res.Results[0].AssignedInterface.Device.ID
 					interfaceOpts := models.ListInterfacesRequest{}
-					interfaceOpts.DeviceId = deviceID
+					interfaceOpts.DeviceID = deviceID
 					interfaceOpts.Name = "cbr0"
 					log.Info(fmt.Sprintf("looking for device %d and interface cbr0", deviceID))
 					nbDcim, err := dcim.New(netboxURL, netboxToken, false)
@@ -169,12 +169,12 @@ func main() {
 						netboxResultFails.Inc()
 						return reconcile.Result{}, err
 					}
-					ipOpts.InterfaceId = interf.Results[0].Id
+					ipOpts.InterfaceID = interf.Results[0].ID
 				case "virtualization.vminterface":
-					deviceID = res.Results[0].AssignedVMInterface.VirtualMachine.Id
+					deviceID = res.Results[0].AssignedVMInterface.VirtualMachine.ID
 					interfaceOpts := models.ListVMInterfacesRequest{}
 					interfaceOpts.Name = "cbr0"
-					interfaceOpts.VmId = deviceID
+					interfaceOpts.VMID = deviceID
 					nbVirt, err := virtualization.New(netboxURL, netboxToken, false)
 					if err != nil {
 						log.Error(err, "error getting virtualization client")
@@ -193,14 +193,14 @@ func main() {
 						netboxResultFails.Inc()
 						return reconcile.Result{}, err
 					}
-					ipOpts.VmInterfaceId = interf.Results[0].Id
+					ipOpts.VMInterfaceID = interf.Results[0].ID
 				default:
 					err := errors.New("no interface assigned to ip")
 					log.Error(err, "error finding interface")
 					netboxResultFails.Inc()
 					return reconcile.Result{}, err
 				}
-				theIP, err := nbIpam.ListIpAddresses(ipOpts)
+				theIP, err := nbIpam.ListIPAddresses(ipOpts)
 				if err != nil {
 					log.Error(err, "error searching cbr0 ip")
 					netboxFails.Inc()
