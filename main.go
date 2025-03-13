@@ -122,7 +122,7 @@ func main() {
 			}
 			if node.Spec.PodCIDR == "" {
 				log.Info("No PodCIDR set getting from netbox")
-				nbIpam, err := ipam.New(netboxURL, netboxToken, false)
+				nbIpam, err := ipam.NewClient(netboxURL, netboxToken, false)
 				if err != nil {
 					return reconcile.Result{}, err
 				}
@@ -151,7 +151,7 @@ func main() {
 					interfaceOpts.DeviceID = deviceID
 					interfaceOpts.Name = "cbr0"
 					log.Info(fmt.Sprintf("looking for device %d and interface cbr0", deviceID))
-					nbDcim, err := dcim.New(netboxURL, netboxToken, false)
+					nbDcim, err := dcim.NewClient(netboxURL, netboxToken, false)
 					if err != nil {
 						log.Error(err, "error getting dcim client")
 						netboxFails.Inc()
@@ -175,7 +175,7 @@ func main() {
 					interfaceOpts := models.ListVMInterfacesRequest{}
 					interfaceOpts.Name = "cbr0"
 					interfaceOpts.VMID = deviceID
-					nbVirt, err := virtualization.New(netboxURL, netboxToken, false)
+					nbVirt, err := virtualization.NewClient(netboxURL, netboxToken, false)
 					if err != nil {
 						log.Error(err, "error getting virtualization client")
 						netboxFails.Inc()
