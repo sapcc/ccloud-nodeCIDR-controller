@@ -4,7 +4,7 @@ go 1.25
 
 require (
 	github.com/prometheus/client_golang v1.20.5
-	github.com/sapcc/go-netbox-go v0.0.0-20250507102615-aa8913faf2ba
+	github.com/sapcc/go-netbox-go v0.0.0-20250918190501-0d008ce8b088
 	go.uber.org/zap v1.27.0
 	k8s.io/api v0.31.0
 	k8s.io/client-go v0.31.0
