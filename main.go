@@ -1,21 +1,5 @@
-/*******************************************************************************
-*
-* Copyright 2010-2023 SAP SE
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You should have received a copy of the License along with this
-* program. If not, you may obtain a copy of the License at
-*
-*     http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*
-*******************************************************************************/
+// SPDX-FileCopyrightText: 2010-2023 SAP SE or an SAP affiliate company
+// SPDX-License-Identifier: Apache-2.0
 
 package main
 
@@ -126,8 +110,8 @@ func main() {
 				if err != nil {
 					return reconcile.Result{}, err
 				}
-				opts := models.ListIPAddressesRequest{}
-				opts.Q = node.Name
+				opts := models.ListIPAddressesRequest{
+					Q: node.Name}
 				res, err := nbIpam.ListIPAddresses(opts)
 				if err != nil {
 					log.Error(err, "error searching ips for hostname")
@@ -147,9 +131,9 @@ func main() {
 				switch objecttype {
 				case "dcim.interface":
 					deviceID = res.Results[0].AssignedInterface.Device.ID
-					interfaceOpts := models.ListInterfacesRequest{}
-					interfaceOpts.DeviceID = deviceID
-					interfaceOpts.Name = "cbr0"
+					interfaceOpts := models.ListInterfacesRequest{
+						DeviceID: deviceID,
+						Name:     "cbr0"}
 					log.Info(fmt.Sprintf("looking for device %d and interface cbr0", deviceID))
 					nbDcim, err := dcim.NewClient(netboxURL, netboxToken, false)
 					if err != nil {
@@ -172,9 +156,9 @@ func main() {
 					ipOpts.InterfaceID = interf.Results[0].ID
 				case "virtualization.vminterface":
 					deviceID = res.Results[0].AssignedVMInterface.VirtualMachine.ID
-					interfaceOpts := models.ListVMInterfacesRequest{}
-					interfaceOpts.Name = "cbr0"
-					interfaceOpts.VMID = deviceID
+					interfaceOpts := models.ListVMInterfacesRequest{
+						Name: "cbr0",
+						VMID: deviceID}
 					nbVirt, err := virtualization.NewClient(netboxURL, netboxToken, false)
 					if err != nil {
 						log.Error(err, "error getting virtualization client")
