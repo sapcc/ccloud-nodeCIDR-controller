@@ -109,8 +109,8 @@ github.com/prometheus/common v0.72.1 h1:ZAiQed/nk8IIcsdzb2TlJu23NEUDyDLQ9TXTN2WR
 github.com/prometheus/common v0.72.1/go.mod h1:1IoBY4IRaJnhs2ESjNzjilP1cJ/P8pimGoomq7zRXrA=
 github.com/prometheus/procfs v0.22.0 h1:6q9+/JL9IKAPbCmBrv9n5O5Ty3NKnciV5X7YGw0oics=
 github.com/prometheus/procfs v0.22.0/go.mod h1:CvmFr/GVhIjIvWJZW3tgkODBQMRIf0EyWMQLHCHab58=
-github.com/sapcc/go-netbox-go v0.0.0-20250507102615-aa8913faf2ba h1:cTlH2EvLzcM0vu1dgD+1VdazMasuomHXijY/tJSGmpw=
-github.com/sapcc/go-netbox-go v0.0.0-20250507102615-aa8913faf2ba/go.mod h1:IoX6mSz2xpV2qfT4REaHD4tY8Y1HsV8SlcGPRCK7vZc=
+github.com/sapcc/go-netbox-go v0.0.0-20260827094610-387cca477b11 h1:hSpbrKsM4q9tVBxDHCHTSuxW10UBRLaCxjpHEAnBEGo=
+github.com/sapcc/go-netbox-go v0.0.0-20260827094610-387cca477b11/go.mod h1:GRVSzFWEAmoeMR2Zj2IX6mQRemj8pD9TD9YFMlrWNno=
 github.com/seborama/govcr v4.5.0+incompatible h1:XvdHtXi0d4cUAn+0aWolvwfS3nmhNC8Z+yMQwn/M64I=
 github.com/seborama/govcr v4.5.0+incompatible/go.mod h1:EgcISudCCYDLzbiAImJ8i7kk4+wTA44Kp+j4S0LhASI=
 github.com/spf13/pflag v1.0.10 h1:4EBh2KAYBwaONj6b2Ye1GiHfwjqyROoF4RwYO+vPwFk=
