@@ -9,7 +9,7 @@ binaries:
     installTo:   bin/
 
 dockerfile:
-  enabled: false
+  enabled: true
 
 golang:
   enableVendoring: false

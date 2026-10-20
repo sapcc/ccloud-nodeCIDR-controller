@@ -5,7 +5,8 @@
     "config:recommended",
     "default:pinDigestsDisabled",
     "docker:pinDigests",
-    "mergeConfidence:all-badges"
+    "mergeConfidence:all-badges",
+    "docker:disable"
   ],
   "assignees": [
     "defo89",

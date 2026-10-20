@@ -12,6 +12,7 @@ import (
 	"os"
 
 	"github.com/prometheus/client_golang/prometheus"
+	"github.com/sapcc/go-api-declarations/bininfo"
 	"github.com/sapcc/go-netbox-go/dcim"
 	"github.com/sapcc/go-netbox-go/ipam"
 	"github.com/sapcc/go-netbox-go/models"
@@ -59,6 +60,8 @@ func init() {
 }
 
 func main() {
+	bininfo.HandleVersionArgument()
+
 	var debug bool
 	var kubeContext string
 	var netboxURL string
